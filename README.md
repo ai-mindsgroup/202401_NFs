@@ -74,7 +74,7 @@ Um fluxo automatizado construído na plataforma **n8n**, focado em:
 
 ## ⚠️ Aviso
 
-> Esta solução é **estritamente educacional**, desenvolvida por alunos do Instituto I2A2, e não deve ser utilizada em ambientes de produção ou com dados sensíveis sem adaptações e validações adequadas.
+> Esta solução é **estritamente educacional**, e não deve ser utilizada em ambientes de produção ou com dados sensíveis sem adaptações e validações adequadas.
 > Esta ferramenta é destinada exclusivamente para fins educacionais no âmbito do Instituto I2A2, desenvolvida por alunos do curso Agentes Autônomos com Redes Generativas.
 
 ---
