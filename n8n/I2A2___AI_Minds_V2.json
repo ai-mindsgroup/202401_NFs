@@ -1,0 +1,996 @@
+{
+  "name": "I2A2 - AI Minds V2",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a2c1421e-8d67-4d0d-b254-1e468e735ec1",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        540
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "id": "c672743b-6ccf-49b3-b315-7a2ca53b611e",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1480,
+        360
+      ],
+      "webhookId": "b0346e8b-6a7d-430d-b9df-9664d8fb0919"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a9a245e-f1a1-4282-bb02-a81ffe629f0f",
+              "name": "chatInput",
+              "value": "={{ $json?.chatInput || $('Webhook').item.json.body.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "b80831d8-c653-4203-8706-adedfdb98f77",
+              "name": "sessionId",
+              "value": "={{ $json?.sessionId || $('Webhook').item.json.body.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1dba5f18-c4d9-48d7-b2fe-0c60aa75fde4",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -860,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://[PROJECT].supabase.co/auth/v1/user",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "[APIKEY]"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ $json.headers.authorization }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "81b24f40-d6b5-4d02-af1f-b42b27102c11",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1300,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "2d5f1cb2-511d-48a3-952a-c7c5be7b3e61",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2eec8fb8-4708-4150-87b4-c67f14d2a463",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1100,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "04f4eb83-7bb8-48b8-aeb3-c3217cf1b844",
+      "name": "Respond with Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -920,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "759a1696-74d5-437f-91b5-5a803082f356",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8959faf9-91a7-4a13-a2dc-b385f0ceabe5",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        680
+      ],
+      "webhookId": "c8191025-0848-45eb-ab90-00080690c054"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        760
+      ],
+      "id": "0b2aae3f-a10a-4eb4-b08f-ff0020e58760",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5lskZinmu0HMTpNH",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1240,
+        -180
+      ],
+      "id": "a7a8edbe-4e36-425a-a16d-a3935fc2455f",
+      "name": "Schedule Trigger",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        -780,
+        -180
+      ],
+      "id": "2c3485be-6404-4c90-b609-9fd42725f812",
+      "name": "Compression"
+    },
+    {
+      "parameters": {
+        "url": "https://drive.usercontent.google.com/download?id=1jaNl2kL-a32HO_jXH3g3J1mGHzHWm9YD&export=download&authuser=0&confirm=t&uuid=df6ce175-ab57-4016-bb45-a2497545f0af&at=AN8xHoov0qnKGHf4lDs5iLuiAUWf:1750006003854",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1000,
+        -180
+      ],
+      "id": "0e40da69-6183-4d84-a220-7ffd226e7ca5",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "file_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        -280
+      ],
+      "id": "8544e75e-ac75-4d26-8af7-612fe19addde",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "file_1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        -60
+      ],
+      "id": "4c302dbe-0e6a-44c2-a2ff-5af950c68101",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {},
+      "id": "e88f0119-415d-45ea-8b47-5949e862525d",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        780
+      ],
+      "notesInFlow": false,
+      "credentials": {
+        "postgres": {
+          "id": "GKHt1enrMg2pCmYV",
+          "name": "Postgres account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "['CHAVE DE ACESSO']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -80,
+        -180
+      ],
+      "id": "9152d1e0-1a8b-4d01-90ca-6214448c76d0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "tableId": "nfe_notas_fiscais",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "chave_acesso",
+              "fieldValue": "={{ $json.CHAVE_DE_ACESSO }}"
+            },
+            {
+              "fieldId": "modelo",
+              "fieldValue": "={{ $json.MODELO }}"
+            },
+            {
+              "fieldId": "serie",
+              "fieldValue": "={{ $json[\"SERIE\"] }}"
+            },
+            {
+              "fieldId": "numero",
+              "fieldValue": "={{ $json[\"NUMERO\"] }}"
+            },
+            {
+              "fieldId": "natureza_operacao",
+              "fieldValue": "={{ $json.NATUREZA_DA_OPERACAO }}"
+            },
+            {
+              "fieldId": "data_emissao",
+              "fieldValue": "={{ $json[\"DATA_EMISSAO\"] }}"
+            },
+            {
+              "fieldId": "evento_mais_recente",
+              "fieldValue": "={{ $json[\"EVENTO_MAIS_RECENTE\"] }}"
+            },
+            {
+              "fieldId": "data_hora_evento_mais_recente",
+              "fieldValue": "={{ $json[\"DATA_HORA_EVENTO_MAIS_RECENTE\"] }}"
+            },
+            {
+              "fieldId": "cpf_cnpj_emitente",
+              "fieldValue": "={{ $json[\"CPF_CNPJ_Emitente\"] }}"
+            },
+            {
+              "fieldId": "razao_social_emitente",
+              "fieldValue": "={{ $json[\"RAZAO_SOCIAL_EMITENTE\"] }}"
+            },
+            {
+              "fieldId": "inscricao_estadual_emitente",
+              "fieldValue": "={{ $json[\"INSCRICAO_ESTADUAL_EMITENTE\"] }}"
+            },
+            {
+              "fieldId": "uf_emitente",
+              "fieldValue": "={{ $json[\"UF_EMITENTE\"] }}"
+            },
+            {
+              "fieldId": "municipio_emitente",
+              "fieldValue": "={{ $json[\"MUNICIPIO_EMITENTE\"] }}"
+            },
+            {
+              "fieldId": "cnpj_destinatario",
+              "fieldValue": "={{ $json[\"CNPJ_DESTINATARIO\"] }}"
+            },
+            {
+              "fieldId": "nome_destinatario",
+              "fieldValue": "={{ $json[\"NOME_DESTINATARIO\"] }}"
+            },
+            {
+              "fieldId": "uf_destinatario",
+              "fieldValue": "={{ $json[\"UF_DESTINATARIO\"] }}"
+            },
+            {
+              "fieldId": "indicador_ie_destinatario",
+              "fieldValue": "={{ $json[\"INDICADOR_IE_DESTINATARIO\"] }}"
+            },
+            {
+              "fieldId": "destino_operacao",
+              "fieldValue": "={{ $json[\"DESTINO_DA_OPERACAO\"] }}"
+            },
+            {
+              "fieldId": "consumidor_final",
+              "fieldValue": "={{ $json[\"CONSUMIDOR_FINAL\"] }}"
+            },
+            {
+              "fieldId": "presenca_comprador",
+              "fieldValue": "={{ $json[\"PRESENCA_DO_COMPRADOR\"] }}"
+            },
+            {
+              "fieldId": "valor_nota_fiscal",
+              "fieldValue": "={{ $json[\"VALOR_NOTA_FISCAL\"] }}"
+            },
+            {
+              "fieldId": "numero_produto",
+              "fieldValue": "={{ $json[\"NUMERO_PRODUTO\"] }}"
+            },
+            {
+              "fieldId": "descricao_produto_servico",
+              "fieldValue": "={{ $json[\"DESCRICAO_DO_PRODUTO_SERVICO\"] }}"
+            },
+            {
+              "fieldId": "codigo_ncm_sh",
+              "fieldValue": "={{ $json[\"CODIGO_NCM_SH\"] }}"
+            },
+            {
+              "fieldId": "cfop",
+              "fieldValue": "={{ $json.CFOP }}"
+            },
+            {
+              "fieldId": "quantidade",
+              "fieldValue": "={{ $json.QUANTIDADE }}"
+            },
+            {
+              "fieldId": "unidade",
+              "fieldValue": "={{ $json.UNIDADE }}"
+            },
+            {
+              "fieldId": "valor_unitario",
+              "fieldValue": "={{ $json[\"VALOR_UNITARIO\"] }}"
+            },
+            {
+              "fieldId": "valor_total",
+              "fieldValue": "={{ $json[\"VALOR_TOTAL\"] }}"
+            },
+            {
+              "fieldId": "ncm_sh_tipo_produto",
+              "fieldValue": "={{ $json.NCM_SH_TIPO_DE_PRODUTO }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -180
+      ],
+      "id": "9ce9339f-6d86-4ca0-9109-26a67788fe0b",
+      "name": "Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dEANF4C4frQQwSuV",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "597afd72-694b-4e21-b382-c8f37f437c3e",
+              "name": "CHAVE_DE_ACESSO",
+              "value": "={{ $json[\"CHAVE DE ACESSO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cae915b1-6913-4070-aeac-1c1340237e14",
+              "name": "MODELO",
+              "value": "={{ $json.MODELO }}",
+              "type": "string"
+            },
+            {
+              "id": "83b3f96c-b39b-4dfa-a956-fafc406bcf6e",
+              "name": "SERIE",
+              "value": "={{ $json[\"SÉRIE\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8664e6cb-9d45-4fd4-84e8-4f3096898137",
+              "name": "NUMERO",
+              "value": "={{ $json[\"NÚMERO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "389aeb18-e7bc-42ea-9de2-47f1490f445e",
+              "name": "NATUREZA_DA_OPERACAO",
+              "value": "={{ $json[\"NATUREZA DA OPERAÇÃO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "1eb6872f-fd94-454e-93bd-039f3173a721",
+              "name": "DATA_EMISSAO",
+              "value": "={{ $json[\"DATA EMISSÃO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "d3e1f825-ded5-45cc-aafd-0d7151a6f2cc",
+              "name": "EVENTO_MAIS_RECENTE",
+              "value": "={{ $json[\"EVENTO MAIS RECENTE\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "c52a6531-ba39-4f4b-9aec-9d34bacd27c3",
+              "name": "DATA_HORA_EVENTO_MAIS_RECENTE",
+              "value": "={{ $json[\"DATA/HORA EVENTO MAIS RECENTE\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "8afcf2d2-1194-4d14-9518-0c7190a743b2",
+              "name": "CPF_CNPJ_Emitente",
+              "value": "={{ $json[\"CPF/CNPJ Emitente\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "5324803b-f501-4d9b-af3b-7a0d31c41404",
+              "name": "RAZAO_SOCIAL_EMITENTE",
+              "value": "={{ $json[\"RAZÃO SOCIAL EMITENTE\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "7e180d29-2049-4344-9a60-bc194dec39bc",
+              "name": "INSCRICAO_ESTADUAL_EMITENTE",
+              "value": "={{ $json[\"INSCRIÇÃO ESTADUAL EMITENTE\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "6d695fe2-749c-4bff-a9e0-f25839fb690b",
+              "name": "UF_EMITENTE",
+              "value": "={{ $json[\"UF EMITENTE\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "542f2387-482e-4165-b6f6-9f99e6279c28",
+              "name": "MUNICIPIO_EMITENTE",
+              "value": "={{ $json[\"MUNICÍPIO EMITENTE\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "de204539-171c-4cc7-9f1e-5905b802437a",
+              "name": "CNPJ_DESTINATARIO",
+              "value": "={{ $json[\"CNPJ DESTINATÁRIO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "69381fd3-c62d-48ca-8751-8e6b20109ca7",
+              "name": "NOME_DESTINATARIO",
+              "value": "={{ $json[\"NOME DESTINATÁRIO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "bee639a9-859d-4820-8ecd-8137451e159a",
+              "name": "UF_DESTINATARIO",
+              "value": "={{ $json[\"UF DESTINATÁRIO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "21006a9d-9ddc-4229-8e8f-9186f3efd749",
+              "name": "INDICADOR_IE_DESTINATARIO",
+              "value": "={{ $json[\"INDICADOR IE DESTINATÁRIO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "17c9cba7-240d-4bf3-be5f-8835b8aefc12",
+              "name": "DESTINO_DA_OPERACAO",
+              "value": "={{ $json[\"DESTINO DA OPERAÇÃO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "7a269609-6c55-44a0-a7fa-cad7b79fe810",
+              "name": "CONSUMIDOR_FINAL",
+              "value": "={{ $json[\"CONSUMIDOR FINAL\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "fea7a701-d6df-4ccd-847e-acf4e53f81d5",
+              "name": "PRESENCA_DO_COMPRADOR",
+              "value": "={{ $json[\"PRESENÇA DO COMPRADOR\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "e161e20a-4da7-4a08-be7b-2632459519cd",
+              "name": "VALOR_NOTA_FISCAL",
+              "value": "={{ $json[\"VALOR NOTA FISCAL\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "291bf71a-fd90-4f4e-a9e9-ea249a1bb390",
+              "name": "NUMERO_PRODUTO",
+              "value": "={{ $json[\"NÚMERO PRODUTO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "5d564025-1f34-4f21-b206-3e3589492e67",
+              "name": "DESCRICAO_DO_PRODUTO_SERVICO",
+              "value": "={{ $json[\"DESCRIÇÃO DO PRODUTO/SERVIÇO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "ad9dedeb-ec11-4ad9-8375-92fc7f41a478",
+              "name": "CODIGO_NCM_SH",
+              "value": "={{ $json[\"CÓDIGO NCM/SH\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "34703140-4dea-4b68-ab7d-8b8fb1016a4b",
+              "name": "NCM_SH_TIPO_DE_PRODUTO",
+              "value": "={{ $json[\"NCM/SH (TIPO DE PRODUTO)\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "05b70936-ffea-40f6-a60e-6e8c5baa010a",
+              "name": "CFOP",
+              "value": "={{ $json.CFOP }}",
+              "type": "string"
+            },
+            {
+              "id": "57a444e8-0347-4e86-b145-79a286a6e32d",
+              "name": "QUANTIDADE",
+              "value": "={{ $json.QUANTIDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "5fc1d2a8-2f59-4e6a-8c8e-1d79b3a597f8",
+              "name": "UNIDADE",
+              "value": "={{ $json.UNIDADE }}",
+              "type": "string"
+            },
+            {
+              "id": "d5216649-eacb-4887-8acb-4d194d4ef9e3",
+              "name": "VALOR_UNITARIO",
+              "value": "={{ $json[\"VALOR UNITÁRIO\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "05989c98-f423-4d7e-a5fe-46e47e4319d6",
+              "name": "VALOR_TOTAL",
+              "value": "={{ $json[\"VALOR TOTAL\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        140,
+        -180
+      ],
+      "id": "3fa17e4d-7d2a-4b33-96f7-b4415d452045",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "agent": "sqlAgent",
+        "promptType": "define",
+        "text": "=Você é um assistente SQL especializado em gerar consultas SELECT para PostgreSQL. Sua única tarefa é gerar uma query SQL válida baseada na pergunta do usuário, consultando a tabela \"nfe_notas_fiscais\". \n\n*Regras estritas:*\n- Gere APENAS o comando SQL, sem qualquer texto adicional\n- Use EXCLUSIVAMENTE comandos SELECT\n- Não inclua explicações, comentários ou formatação Markdown\n- Mantenha a sintaxe PostgreSQL válida\n- Para pesquisar a quantidade de notas fiscais utilize distinct para chave_acesso \n\n*Estrutura da tabela (apenas para referência):*\nchave_acesso, modelo, serie, numero, natureza_operacao, data_emissao, evento_mais_recente, data_hora_evento_mais_recente, cpf_cnpj_emitente, razao_social_emitente, inscricao_estadual_emitente, uf_emitente, municipio_emitente, cnpj_destinatario, nome_destinatario, uf_destinatario, indicador_ie_destinatario, destino_operacao, consumidor_final, presenca_comprador, valor_nota_fiscal, numero_produto, descricao_produto_servico, codigo_ncm_sh, ncm_sh_tipo_produto, cfop, quantidade, unidade, valor_unitario, valor_total\n\n*Pergunta do usuário:*\n{{ $json.chatInput }}",
+        "options": {}
+      },
+      "id": "cc255965-9f44-45c7-b59e-399cc47c9f66",
+      "name": "AI Agent SQL",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -460,
+        360
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "postgres": {
+          "id": "GKHt1enrMg2pCmYV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        380,
+        800
+      ],
+      "id": "9c9819e9-8a66-45b9-963b-6bed7ad9a29a",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5lskZinmu0HMTpNH",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um assistente especialista em notas fiscais eletrônicas (NFe).\nSeu objetivo é analisar, buscar, interpretar e gerar relatórios sobre notas fiscais eletrônicas. Responda conforme o retorno {{ $('Query').item.json.toJsonString() }} utilizando linguagem natural, não responsa em formato JSON ou informe comandos SQL.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        440,
+        540
+      ],
+      "id": "64b5edf9-26d3-4e92-863b-f612a41fb24f",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.cleanSQL }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        200,
+        420
+      ],
+      "id": "c2e38cda-b4d5-4b27-858a-0df5d1333f0d",
+      "name": "Query",
+      "credentials": {
+        "postgres": {
+          "id": "GKHt1enrMg2pCmYV",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1f511bf-45df-4117-8bcb-935203db7ab0",
+              "name": "cleanSQL",
+              "value": "={{ $json.output.replace(/``````/g, '').trim().split(';')[0] + ';' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -40,
+        360
+      ],
+      "id": "a0abad3b-92a7-4d9f-a8ca-50cb9171793d",
+      "name": "clean_sql"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "208e8fe0-2a8c-4459-b1a6-bffb00be86c6",
+              "name": "output",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        540
+      ],
+      "id": "eeca6d6e-349d-4096-9d66-b5e7ab5a4923",
+      "name": "output"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond with Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent SQL",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Compression",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compression": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent SQL",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent SQL": {
+      "main": [
+        [
+          {
+            "node": "clean_sql",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean_sql": {
+      "main": [
+        [
+          {
+            "node": "Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "90f646c6-42c3-49b6-ba80-afe307a4729d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8509e062306350bf0412097eb1ef5b3b4b3ab8f558645cee48a8dd1dcabdcfc0"
+  },
+  "id": "mtx2B0P9qP1eNQTd",
+  "tags": []
+}
